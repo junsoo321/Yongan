@@ -10,7 +10,7 @@ conn = mysql.connector.connect( #이부분은 mysql서버와 연결하는 부분
 cursor = conn.cursor()
 
 # 이미지 파일이 저장된 폴더 경로
-f_path = "C:/Users/junso/Downloads/linearAlgebra2_face_detection_datasets"
+f_path = "C:/Users/수정필요"
 
 def datebase_store_code(current_folder): #폴더를 재귀적으로 탐색하여 데이터를 추출하는 함수 정의
     for item in os.listdir(current_folder): #current_folder 경로의 모든 데이터를 나열
