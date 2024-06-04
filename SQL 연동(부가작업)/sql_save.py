@@ -5,7 +5,7 @@ conn = mysql.connector.connect( #이부분은 mysql서버와 연결하는 부분
     host="localhost", #호스트 이름
     user="root", #아이디
     password="1234", # 비번
-    database="sakila" #테이블 생성한 데이터베이스
+    database="face_recognition" #테이블 생성한 데이터베이스
 )
 cursor = conn.cursor()
 
@@ -20,7 +20,7 @@ def datebase_store_code(current_folder): #폴더를 탐색하여 데이터를 �
         else: #폴더가 아닐경우 = 사진일경우
             if item.endswith(('.jpg')):  # .jpg파일 필터링(.DS.Store 파일 등 걸러내는 용도)
                 user_name = item.split("_")[1]  # 첫번째 _부터 두번째 _사이의 사용자 이름 추출
-                insert_query = "INSERT INTO users (name, image_path) VALUES (%s, %s)" #SQL 쿼리 정의
+                insert_query = "INSERT INTO face_data (name, image_path) VALUES (%s, %s)" #SQL 쿼리 정의
                 cursor.execute(insert_query, (user_name, item_path)) #데이터베이스에 넣기
 
 datebase_store_code(f_path) #위에서 정의한 함수로 (f_path)부터 탐색 시작
