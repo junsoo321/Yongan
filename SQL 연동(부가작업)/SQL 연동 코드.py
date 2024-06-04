@@ -18,7 +18,7 @@ def datebase_store_code(current_folder): #폴더를 재귀적으로 탐색하여
         if os.path.isdir(item_path): #current_folder 경로의 데이터가 폴더인지 확인
             datebase_store_code(item_path) #폴더일경우 재귀함수로 폴더 내 데이터 추출
         else: #폴더가 아닐경우 = 사진일경우
-            if item.endswith(('.jpg')):  # .jpg파일 필터링(.DS.Store 파S일 등 걸러내는 용도)
+            if item.endswith(('.jpg')):  # .jpg파일 필터링(.DS.Store 파일 등 걸러내는 용도)
                 user_name = item.split("_")[1]  # 첫번째 _부터 두번째 _사이의 사용자 이름 추출
                 insert_query = "INSERT INTO face_data (name, image_path) VALUES (%s, %s)" #SQL 쿼리 정의
                 cursor.execute(insert_query, (user_name, item_path)) #데이터베이스에 넣기
