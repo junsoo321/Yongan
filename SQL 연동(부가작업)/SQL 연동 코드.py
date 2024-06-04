@@ -1,61 +1,32 @@
 import os
 import mysql.connector
 
-class TrainFaceData:
-    def __init__(self, model_save_path=None, n_neighbors=None, knn_algo='ball_tree', verbose=False):
-        self.model_save_path = model_save_path
-        self.n_neighbors = n_neighbors
-        self.knn_algo = knn_algo
-        self.verbose = verbose
-        self.knn_clf = None
+conn = mysql.connector.connect( #이부분은 mysql서버와 연결하는 부분이라서 mysql설치 및 테이블 생성 시 값을 입력해야합니다.
+    host="localhost", #호스트 이름
+    user="root", #아이디
+    password="1234", # 비번
+    database="face_recognition" #테이블 생성한 데이터베이스
+)
+cursor = conn.cursor()
 
-    def train(self):
-        X = []
-        y = []
+# 이미지 파일이 저장된 폴더 경로
+f_path = "C:/Users/junso/Downloads/linearAlgebra2_face_detection_datasets"
 
-        #이 부분은 mysql서버와 연결하는 부분이라서 mysql설치 및 테이블 생성 시 값을 입력해야합니다
-        conn = mysql.connector.connect( 
-            host="localhost", #호스트 이름
-            user="root", #아이디
-            password="1234", # 비번
-            database="sakila" #테이블 생성한 데이터베이스
-        )
-        cursor = conn.cursor()
+def datebase_store_code(current_folder): #폴더를 재귀적으로 탐색하여 데이터를 추출하는 함수 정의
+    for item in os.listdir(current_folder): #current_folder 경로의 모든 데이터를 나열
+        item_path = os.path.join(current_folder, item) #데이터별 경로 생성
+        if os.path.isdir(item_path): #current_folder 경로의 데이터가 폴더인지 확인
+            datebase_store_code(item_path) #폴더일경우 재귀함수로 폴더 내 데이터 추출
+        else: #폴더가 아닐경우 = 사진일경우
+            if item.endswith(('.jpg')):  # .jpg파일 필터링(.DS.Store 파S일 등 걸러내는 용도)
+                user_name = item.split("_")[1]  # 첫번째 _부터 두번째 _사이의 사용자 이름 추출
+                insert_query = "INSERT INTO face_data (name, image_path) VALUES (%s, %s)" #SQL 쿼리 정의
+                cursor.execute(insert_query, (user_name, item_path)) #데이터베이스에 넣기
 
-        # 데이터베이스에서 사용자 정보 불러오기
-        cursor.execute("SELECT name, image_path FROM users")
-        users = cursor.fetchall()
+datebase_store_code(f_path) #위에서 정의한 함수로 (f_path)부터 탐색 시작
 
-        for user in users: #user를 users(사용자 정보)에 대해 반복
-            name, image_path = user
-            image = face_recognition.load_image_file(image_path) #이미지 로드
-            face_bounding_boxes = face_recognition.face_locations(image) #face_location, 얼굴 위치 찾음
+conn.commit()# 변경 사항 저장
 
-            if len(face_bounding_boxes) != 1: #위의 face_location으로 찾은 얼굴의 개수가 1개가 아닐시
-                if self.verbose: #학습에 부적합할때
-                    print(f"이미지 {image_path}는 학습에 적합하지 않음: {'얼굴을 찾지 못함' if len(face_bounding_boxes) < 1 else '여러 얼굴을 찾음'}")
-            else: #얼굴이 1개일경우
-                face_encoding = face_recognition.face_encodings(image, known_face_locations=face_bounding_boxes)[0] #이미지에서 얼굴 특징 추출
-                X.append(face_encoding) #얼굴 특징을 x에 저장
-                y.append(name) #이름을 y에 저장
-
-        cursor.close() #커서 close
-        conn.close() #SQL 연결 종료
-
-        if self.n_neighbors is None:
-            self.n_neighbors = int(round(math.sqrt(len(X))))
-            if self.verbose:
-                print("자동으로 선택된 n_neighbors:", self.n_neighbors)
-
-        knn_clf = neighbors.KNeighborsClassifier(n_neighbors=self.n_neighbors, algorithm=self.knn_algo, weights='distance')
-        knn_clf.fit(X, y)
-
-        if self.model_save_path is not None:
-            with open(self.model_save_path, 'wb') as f:
-                pickle.dump(knn_clf, f)
-
-        return knn_clf
-
-# KNN 모델 학습
-train_data = TrainFaceData(model_save_path=None, n_neighbors=None, knn_algo='ball_tree', verbose=True)
-knn_clf = train_data.train()
+#연결 종료
+cursor.close()
+conn.close()
