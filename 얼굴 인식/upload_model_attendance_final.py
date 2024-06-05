@@ -309,7 +309,6 @@ while True:
                             if name not in face_recognition_times:
                                 face_recognition_times[name] = current_time
                             elapsed_time = current_time - face_recognition_times[name]
-                            past_names = face_names
                             if elapsed_time >= 3:  # 3초 이상 인식된 경우
                                 if name not in already_attended:
                                     attendance.mark_attendance(name)
