@@ -15,7 +15,7 @@ import face_recognition
 from face_recognition.face_recognition_cli import image_files_in_folder
 import mysql.connector
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'} #SQL에서 정제된 데이터를 가져오므로 필요 없는 코드
+# ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'} #SQL에서 정제된 데이터를 가져오므로 필요 없는 코드
 
 class TrainFaceData:
     def __init__(self, model_save_path, n_neighbors, knn_algo='ball_tree', verbose=True):
