@@ -1,7 +1,7 @@
 create database face_recognition;
 -- 데이터베이스 생성 코드
 
-use face-recognition;
+use face_recognition;
 -- 데이터베이스 사용
 
 create table face_data(
